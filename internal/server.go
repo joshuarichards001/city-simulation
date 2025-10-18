@@ -8,7 +8,7 @@ import (
 
 const (
 	defaultPort      = "8080"
-	frontendDistPath = "./frontend/dist"
+	webDistPath = "./web/dist"
 )
 
 type Server struct {
@@ -32,12 +32,12 @@ func New() *Server {
 }
 
 func (s *Server) setupRoutes() {
-	staticHandler := NewStaticHandler(frontendDistPath)
+	staticHandler := NewStaticHandler(webDistPath)
 	s.router.Handle("/", staticHandler)
 }
 
 func (s *Server) Start() error {
 	addr := ":" + s.port
-	log.Printf("Starting server on port %s, serving static files from %s", s.port, frontendDistPath)
+	log.Printf("Starting server on port %s, serving static files from %s", s.port, webDistPath)
 	return http.ListenAndServe(addr, s.router)
 }
