@@ -22,3 +22,7 @@ A city simulation that users can watch play out in real time in their browser.
 ## Programming approach
 
 Ensure that all your implementations are simple and concise.
+
+## Other Notes
+
+Don't write documentation about the changes you make.
