@@ -7,26 +7,33 @@ import (
 	"time"
 )
 
-type GameState struct {
-	Tick       int       `json:"tick"`
-	Population int       `json:"population"`
-	Money      int       `json:"money"`
-	Happiness  float64   `json:"happiness"`
-	Citizens   []Citizen `json:"citizens"`
-	Timestamp  int64     `json:"timestamp"`
+type Command struct {
+	Type string      `json:"type"`
+	Data interface{} `json:"data"`
+}
+
+type StartMoveData struct {
+	CitizenID int     `json:"citizenId"`
+	FromX     float64 `json:"fromX"`
+	FromY     float64 `json:"fromY"`
+	ToX       float64 `json:"toX"`
+	ToY       float64 `json:"toY"`
+	Duration  int     `json:"duration"`
 }
 
 type Citizen struct {
-	ID   int     `json:"id"`
-	X    float64 `json:"x"`
-	Y    float64 `json:"y"`
-	Name string  `json:"name"`
+	ID        int     `json:"id"`
+	X         float64 `json:"x"`
+	Y         float64 `json:"y"`
+	TargetX   float64 `json:"-"`
+	TargetY   float64 `json:"-"`
+	MoveUntil int64   `json:"-"`
 }
 
 type Game struct {
 	hub        *Hub
 	tickRate   time.Duration
-	state      GameState
+	citizens   []Citizen
 	stopSignal chan bool
 }
 
@@ -35,26 +42,22 @@ func NewGame(hub *Hub) *Game {
 		hub:        hub,
 		tickRate:   100 * time.Millisecond,
 		stopSignal: make(chan bool),
-		state: GameState{
-			Tick:       0,
-			Population: 5,
-			Money:      10000,
-			Happiness:  75.5,
-			Citizens:   generateDummyCitizens(5),
-		},
+		citizens:   generateCitizens(5),
 	}
 }
 
-func generateDummyCitizens(count int) []Citizen {
+func generateCitizens(count int) []Citizen {
 	citizens := make([]Citizen, count)
-	names := []string{"Alice", "Bob", "Charlie", "Diana", "Eve"}
-
 	for i := 0; i < count; i++ {
+		x := rand.Float64() * 800
+		y := rand.Float64() * 600
 		citizens[i] = Citizen{
-			ID:   i + 1,
-			X:    rand.Float64() * 800,
-			Y:    rand.Float64() * 600,
-			Name: names[i%len(names)],
+			ID:        i + 1,
+			X:         x,
+			Y:         y,
+			TargetX:   x,
+			TargetY:   y,
+			MoveUntil: 0,
 		}
 	}
 	return citizens
@@ -69,7 +72,6 @@ func (g *Game) Start() {
 		select {
 		case <-ticker.C:
 			g.update()
-			g.broadcast()
 		case <-g.stopSignal:
 			log.Println("Game loop stopped")
 			return
@@ -82,38 +84,43 @@ func (g *Game) Stop() {
 }
 
 func (g *Game) update() {
-	g.state.Tick++
-	g.state.Timestamp = time.Now().UnixMilli()
+	now := time.Now().UnixMilli()
 
-	for i := range g.state.Citizens {
-		g.state.Citizens[i].X += (rand.Float64() - 0.5) * 5
-		g.state.Citizens[i].Y += (rand.Float64() - 0.5) * 5
-
-		g.state.Citizens[i].X = clamp(g.state.Citizens[i].X, 0, 800)
-		g.state.Citizens[i].Y = clamp(g.state.Citizens[i].Y, 0, 600)
+	for i := range g.citizens {
+		if now >= g.citizens[i].MoveUntil {
+			g.startNewMove(&g.citizens[i])
+		}
 	}
-
-	g.state.Money += rand.Intn(100) - 40
-	g.state.Happiness += (rand.Float64() - 0.5) * 2
-	g.state.Happiness = clamp(g.state.Happiness, 0, 100)
 }
 
-func (g *Game) broadcast() {
-	data, err := json.Marshal(g.state)
+func (g *Game) startNewMove(citizen *Citizen) {
+	citizen.X = citizen.TargetX
+	citizen.Y = citizen.TargetY
+
+	citizen.TargetX = rand.Float64() * 800
+	citizen.TargetY = rand.Float64() * 600
+
+	duration := rand.Intn(3000) + 2000
+
+	citizen.MoveUntil = time.Now().UnixMilli() + int64(duration)
+
+	cmd := Command{
+		Type: "START_MOVE",
+		Data: StartMoveData{
+			CitizenID: citizen.ID,
+			FromX:     citizen.X,
+			FromY:     citizen.Y,
+			ToX:       citizen.TargetX,
+			ToY:       citizen.TargetY,
+			Duration:  duration,
+		},
+	}
+
+	data, err := json.Marshal(cmd)
 	if err != nil {
-		log.Printf("Error marshaling game state: %v", err)
+		log.Printf("Error marshaling command: %v", err)
 		return
 	}
 
 	g.hub.Broadcast(data)
-}
-
-func clamp(value, min, max float64) float64 {
-	if value < min {
-		return min
-	}
-	if value > max {
-		return max
-	}
-	return value
 }
