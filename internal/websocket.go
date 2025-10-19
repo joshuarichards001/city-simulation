@@ -22,28 +22,18 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func NewWebSocketHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("WebSocketHandler created")
-
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	defer conn.Close()
-
-	for {
-		messageType, message, err := conn.ReadMessage()
+func HandleWebSocket(hub *Hub) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			log.Println(err)
-			break
+			log.Printf("WebSocket upgrade error: %v", err)
+			return
 		}
-		log.Printf("Received message: %s", message)
-		err = conn.WriteMessage(messageType, message)
-		if err != nil {
-			log.Println(err)
-			break
-		}
+
+		client := NewClient(hub, conn)
+		hub.register <- client
+
+		go client.writePump()
+		go client.readPump()
 	}
 }

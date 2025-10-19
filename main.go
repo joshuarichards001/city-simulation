@@ -12,8 +12,8 @@ func main() {
 		log.Println("No .env file found or error loading it")
 	}
 
-	srv := internal.New()
-	if err := srv.Start(); err != nil {
+	server := internal.NewServer()
+	if err := server.Start(); err != nil {
 		log.Fatalf("server failed to start: %v", err)
 	}
 }

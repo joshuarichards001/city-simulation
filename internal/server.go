@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	defaultPort      = "8080"
+	defaultPort = "8080"
 	webDistPath = "./web/dist"
 )
 
@@ -16,25 +16,28 @@ type Server struct {
 	router *http.ServeMux
 }
 
-func New() *Server {
+func NewServer() *Server {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
 	}
+
+	hub := NewHub()
+	game := NewGame(hub)
 
 	s := &Server{
 		port:   port,
 		router: http.NewServeMux(),
 	}
 
-	s.setupRoutes()
-	return s
-}
-
-func (s *Server) setupRoutes() {
 	staticHandler := NewStaticHandler(webDistPath)
 	s.router.Handle("/", staticHandler)
-	s.router.HandleFunc("/ws", NewWebSocketHandler)
+	s.router.HandleFunc("/ws", HandleWebSocket(hub))
+
+	go hub.Run()
+	go game.Start()
+
+	return s
 }
 
 func (s *Server) Start() error {
