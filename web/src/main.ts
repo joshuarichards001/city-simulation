@@ -1,5 +1,7 @@
-import { Application, Assets, Sprite } from "pixi.js";
+import { Application } from "pixi.js";
 import { WebSocketClient } from "./websocket";
+import { CitizenRenderer } from "./citizenRenderer";
+import { StartMoveData } from "./types";
 
 (async () => {
   // Create a new application
@@ -11,30 +13,20 @@ import { WebSocketClient } from "./websocket";
   // Append the application canvas to the document body
   document.getElementById("pixi-container")!.appendChild(app.canvas);
 
+  // Create citizen renderer
+  const citizenRenderer = new CitizenRenderer(app);
+  await citizenRenderer.init();
+
   // Connect to WebSocket
   const ws = new WebSocketClient();
+
+  // Handle START_MOVE messages
+  ws.on("START_MOVE", (data) => {
+    citizenRenderer.handleStartMove(data as StartMoveData);
+  });
+
   ws.connect();
 
-  // Load the bunny texture
-  const texture = await Assets.load("/assets/bunny.png");
-
-  // Create a bunny Sprite
-  const bunny = new Sprite(texture);
-
-  // Center the sprite's anchor point
-  bunny.anchor.set(0.5);
-
-  // Move the sprite to the center of the screen
-  bunny.position.set(app.screen.width / 2, app.screen.height / 2);
-
-  // Add the bunny to the stage
-  app.stage.addChild(bunny);
-
-  // Listen for animate update
-  app.ticker.add((time) => {
-    // Just for fun, let's rotate mr rabbit a little.
-    // * Delta is 1 if running at 100% performance *
-    // * Creates frame-independent transformation *
-    bunny.rotation += 0.1 * time.deltaTime;
-  });
+  // Start animation loop
+  citizenRenderer.startAnimationLoop();
 })();

@@ -1,6 +1,7 @@
 export class WebSocketClient {
   private ws: WebSocket | null = null;
   private url: string;
+  private messageHandlers: Map<string, (data: unknown) => void> = new Map();
 
   constructor() {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -16,7 +17,15 @@ export class WebSocketClient {
     };
 
     this.ws.onmessage = (event) => {
-      console.log("Message received:", event.data);
+      try {
+        const message = JSON.parse(event.data);
+        const handler = this.messageHandlers.get(message.type);
+        if (handler) {
+          handler(message.data);
+        }
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
     };
 
     this.ws.onerror = (error) => {
@@ -26,6 +35,10 @@ export class WebSocketClient {
     this.ws.onclose = () => {
       console.log("WebSocket closed");
     };
+  }
+
+  on(messageType: string, handler: (data: unknown) => void) {
+    this.messageHandlers.set(messageType, handler);
   }
 
   send(message: string) {
