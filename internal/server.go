@@ -34,6 +34,7 @@ func New() *Server {
 func (s *Server) setupRoutes() {
 	staticHandler := NewStaticHandler(webDistPath)
 	s.router.Handle("/", staticHandler)
+	s.router.HandleFunc("/ws", NewWebSocketHandler)
 }
 
 func (s *Server) Start() error {

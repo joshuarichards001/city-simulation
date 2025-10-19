@@ -1,4 +1,5 @@
 import { Application, Assets, Sprite } from "pixi.js";
+import { WebSocketClient } from "./websocket";
 
 (async () => {
   // Create a new application
@@ -9,6 +10,10 @@ import { Application, Assets, Sprite } from "pixi.js";
 
   // Append the application canvas to the document body
   document.getElementById("pixi-container")!.appendChild(app.canvas);
+
+  // Connect to WebSocket
+  const ws = new WebSocketClient();
+  ws.connect();
 
   // Load the bunny texture
   const texture = await Assets.load("/assets/bunny.png");
