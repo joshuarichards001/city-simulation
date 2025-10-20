@@ -1,4 +1,4 @@
-package internal
+package simulation
 
 import (
 	"encoding/json"
@@ -6,6 +6,10 @@ import (
 	"math/rand"
 	"time"
 )
+
+type Broadcaster interface {
+	Broadcast(message []byte)
+}
 
 type Command struct {
 	Type string      `json:"type"`
@@ -30,19 +34,19 @@ type Citizen struct {
 	MoveUntil int64   `json:"-"`
 }
 
-type Game struct {
-	hub        *Hub
-	tickRate   time.Duration
-	citizens   []Citizen
-	stopSignal chan bool
+type Simulation struct {
+	broadcaster Broadcaster
+	tickRate    time.Duration
+	citizens    []Citizen
+	stopSignal  chan bool
 }
 
-func NewGame(hub *Hub) *Game {
-	return &Game{
-		hub:        hub,
-		tickRate:   100 * time.Millisecond,
-		stopSignal: make(chan bool),
-		citizens:   generateCitizens(5),
+func NewSimulation(broadcaster Broadcaster) *Simulation {
+	return &Simulation{
+		broadcaster: broadcaster,
+		tickRate:    100 * time.Millisecond,
+		stopSignal:  make(chan bool),
+		citizens:    generateCitizens(5),
 	}
 }
 
@@ -63,37 +67,37 @@ func generateCitizens(count int) []Citizen {
 	return citizens
 }
 
-func (g *Game) Start() {
-	log.Println("Game loop started")
-	ticker := time.NewTicker(g.tickRate)
+func (s *Simulation) Start() {
+	log.Println("Simulation started")
+	ticker := time.NewTicker(s.tickRate)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ticker.C:
-			g.update()
-		case <-g.stopSignal:
-			log.Println("Game loop stopped")
+			s.update()
+		case <-s.stopSignal:
+			log.Println("Simulation stopped")
 			return
 		}
 	}
 }
 
-func (g *Game) Stop() {
-	g.stopSignal <- true
+func (s *Simulation) Stop() {
+	s.stopSignal <- true
 }
 
-func (g *Game) update() {
+func (s *Simulation) update() {
 	now := time.Now().UnixMilli()
 
-	for i := range g.citizens {
-		if now >= g.citizens[i].MoveUntil {
-			g.startNewMove(&g.citizens[i])
+	for i := range s.citizens {
+		if now >= s.citizens[i].MoveUntil {
+			s.startNewMove(&s.citizens[i])
 		}
 	}
 }
 
-func (g *Game) startNewMove(citizen *Citizen) {
+func (s *Simulation) startNewMove(citizen *Citizen) {
 	citizen.X = citizen.TargetX
 	citizen.Y = citizen.TargetY
 
@@ -122,5 +126,5 @@ func (g *Game) startNewMove(citizen *Citizen) {
 		return
 	}
 
-	g.hub.Broadcast(data)
+	s.broadcaster.Broadcast(data)
 }

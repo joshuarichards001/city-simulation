@@ -3,7 +3,8 @@ package main
 import (
 	"log"
 
-	"city-simulation/internal"
+	"city-simulation/internal/server"
+
 	"github.com/joho/godotenv"
 )
 
@@ -12,8 +13,8 @@ func main() {
 		log.Println("No .env file found or error loading it")
 	}
 
-	server := internal.NewServer()
-	if err := server.Start(); err != nil {
+	srv := server.NewServer()
+	if err := srv.Start(); err != nil {
 		log.Fatalf("server failed to start: %v", err)
 	}
 }

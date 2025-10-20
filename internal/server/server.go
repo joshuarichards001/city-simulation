@@ -1,9 +1,11 @@
-package internal
+package server
 
 import (
 	"log"
 	"net/http"
 	"os"
+
+	"city-simulation/internal/simulation"
 )
 
 const (
@@ -21,9 +23,9 @@ func NewServer() *Server {
 	if port == "" {
 		port = defaultPort
 	}
-
+	
 	hub := NewHub()
-	game := NewGame(hub)
+	g := simulation.NewSimulation(hub)
 
 	s := &Server{
 		port:   port,
@@ -35,7 +37,7 @@ func NewServer() *Server {
 	s.router.HandleFunc("/ws", HandleWebSocket(hub))
 
 	go hub.Run()
-	go game.Start()
+	go g.Start()
 
 	return s
 }
