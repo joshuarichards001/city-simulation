@@ -22,45 +22,45 @@ func NewHub() *Hub {
 	}
 }
 
-func (h *Hub) Run() {
+func (hub *Hub) Run() {
 	for {
 		select {
-		case client := <-h.register:
-			h.mu.Lock()
-			h.clients[client] = true
-			h.mu.Unlock()
-			log.Printf("Client registered. Total clients: %d", h.GetClientCount())
+		case client := <-hub.register:
+			hub.mu.Lock()
+			hub.clients[client] = true
+			hub.mu.Unlock()
+			log.Printf("Client registered. Total clients: %d", hub.GetClientCount())
 
-		case client := <-h.unregister:
-			h.mu.Lock()
-			if _, ok := h.clients[client]; ok {
-				delete(h.clients, client)
+		case client := <-hub.unregister:
+			hub.mu.Lock()
+			if _, ok := hub.clients[client]; ok {
+				delete(hub.clients, client)
 				close(client.send)
 			}
-			h.mu.Unlock()
-			log.Printf("Client unregistered. Total clients: %d", h.GetClientCount())
+			hub.mu.Unlock()
+			log.Printf("Client unregistered. Total clients: %d", hub.GetClientCount())
 
-		case message := <-h.broadcast:
-			h.mu.RLock()
-			for client := range h.clients {
+		case message := <-hub.broadcast:
+			hub.mu.RLock()
+			for client := range hub.clients {
 				select {
 				case client.send <- message:
 				default:
 					close(client.send)
-					delete(h.clients, client)
+					delete(hub.clients, client)
 				}
 			}
-			h.mu.RUnlock()
+			hub.mu.RUnlock()
 		}
 	}
 }
 
-func (h *Hub) GetClientCount() int {
-	h.mu.RLock()
-	defer h.mu.RUnlock()
-	return len(h.clients)
+func (hub *Hub) GetClientCount() int {
+	hub.mu.RLock()
+	defer hub.mu.RUnlock()
+	return len(hub.clients)
 }
 
-func (h *Hub) Broadcast(message []byte) {
-	h.broadcast <- message
+func (hub *Hub) Broadcast(message []byte) {
+	hub.broadcast <- message
 }

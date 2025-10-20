@@ -19,19 +19,19 @@ func NewStaticHandler(distPath string) *StaticHandler {
 	}
 }
 
-func (h *StaticHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (handler *StaticHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("incoming request: method=%s path=%s remote_addr=%s",
 		r.Method,
 		r.URL.Path,
 		r.RemoteAddr,
 	)
 
-	path := filepath.Join(h.distPath, r.URL.Path)
+	path := filepath.Join(handler.distPath, r.URL.Path)
 
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		log.Printf("file not found, serving index.html: path=%s", r.URL.Path)
-		http.ServeFile(w, r, filepath.Join(h.distPath, "index.html"))
+		http.ServeFile(w, r, filepath.Join(handler.distPath, "index.html"))
 		return
 	}
 
@@ -44,5 +44,5 @@ func (h *StaticHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.fs.ServeHTTP(w, r)
+	handler.fs.ServeHTTP(w, r)
 }

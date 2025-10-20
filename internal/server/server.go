@@ -25,25 +25,25 @@ func NewServer() *Server {
 	}
 	
 	hub := NewHub()
-	g := simulation.NewSimulation(hub)
+	simulation := simulation.NewSimulation(hub)
 
-	s := &Server{
+	server := &Server{
 		port:   port,
 		router: http.NewServeMux(),
 	}
 
 	staticHandler := NewStaticHandler(webDistPath)
-	s.router.Handle("/", staticHandler)
-	s.router.HandleFunc("/ws", HandleWebSocket(hub))
+	server.router.Handle("/", staticHandler)
+	server.router.HandleFunc("/ws", HandleWebSocket(hub))
 
 	go hub.Run()
-	go g.Start()
+	go simulation.Start()
 
-	return s
+	return server
 }
 
-func (s *Server) Start() error {
-	addr := ":" + s.port
-	log.Printf("Starting server on port %s, serving static files from %s", s.port, webDistPath)
-	return http.ListenAndServe(addr, s.router)
+func (server *Server) Start() error {
+	addr := ":" + server.port
+	log.Printf("Starting server on port %s, serving static files from %s", server.port, webDistPath)
+	return http.ListenAndServe(addr, server.router)
 }

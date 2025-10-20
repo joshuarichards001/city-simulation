@@ -67,37 +67,37 @@ func generateCitizens(count int) []Citizen {
 	return citizens
 }
 
-func (s *Simulation) Start() {
+func (simulation *Simulation) Start() {
 	log.Println("Simulation started")
-	ticker := time.NewTicker(s.tickRate)
+	ticker := time.NewTicker(simulation.tickRate)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ticker.C:
-			s.update()
-		case <-s.stopSignal:
+			simulation.update()
+		case <-simulation.stopSignal:
 			log.Println("Simulation stopped")
 			return
 		}
 	}
 }
 
-func (s *Simulation) Stop() {
-	s.stopSignal <- true
+func (simulation *Simulation) Stop() {
+	simulation.stopSignal <- true
 }
 
-func (s *Simulation) update() {
+func (simulation *Simulation) update() {
 	now := time.Now().UnixMilli()
 
-	for i := range s.citizens {
-		if now >= s.citizens[i].MoveUntil {
-			s.startNewMove(&s.citizens[i])
+	for i := range simulation.citizens {
+		if now >= simulation.citizens[i].MoveUntil {
+			simulation.startNewMove(&simulation.citizens[i])
 		}
 	}
 }
 
-func (s *Simulation) startNewMove(citizen *Citizen) {
+func (simulation *Simulation) startNewMove(citizen *Citizen) {
 	citizen.X = citizen.TargetX
 	citizen.Y = citizen.TargetY
 
@@ -126,5 +126,5 @@ func (s *Simulation) startNewMove(citizen *Citizen) {
 		return
 	}
 
-	s.broadcaster.Broadcast(data)
+	simulation.broadcaster.Broadcast(data)
 }

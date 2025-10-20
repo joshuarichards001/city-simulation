@@ -19,10 +19,8 @@ A city simulation that users can watch play out in real time in their browser.
 		- Rate limit WebSocket connections
 	- Plausible Analytics
 	
-## Programming approach
+## Your Approach to Changes
 
-Ensure that all your implementations are simple and concise.
-
-## Other Notes
-
-Don't write documentation about the changes you make.
+- Ensure that all your implementations are simple and concise.
+- Don't write documentation about the changes you make.
+- Use full words for variable names. Don't use abbreviations.
