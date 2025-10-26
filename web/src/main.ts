@@ -20,8 +20,8 @@ import { StartMoveData } from "./types";
   // Connect to WebSocket
   const ws = new WebSocketClient();
 
-  // Handle START_MOVE messages
-  ws.on("START_MOVE", (data) => {
+  // Handle MOVE messages
+  ws.on("MOVE", (data) => {
     citizenRenderer.handleStartMove(data as StartMoveData);
   });
 
