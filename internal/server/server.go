@@ -23,18 +23,18 @@ func NewServer() *Server {
 	if port == "" {
 		port = defaultPort
 	}
-	
+
 	hub := NewHub()
 	simulation := simulation.NewSimulation(hub)
-
 	server := &Server{
 		port:   port,
 		router: http.NewServeMux(),
 	}
-
 	staticHandler := NewStaticHandler(webDistPath)
+	websocketHandler := NewWebSocketHandler(hub)
+
 	server.router.Handle("/", staticHandler)
-	server.router.HandleFunc("/ws", HandleWebSocket(hub))
+	server.router.Handle("/ws", websocketHandler)
 
 	go hub.Run()
 	go simulation.Start()

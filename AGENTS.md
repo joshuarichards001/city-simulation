@@ -24,3 +24,4 @@ A city simulation that users can watch play out in real time in their browser.
 - Ensure that all your implementations are simple and concise.
 - Don't write documentation about the changes you make.
 - Use full words for variable names. Don't use abbreviations.
+- Reflect on the changes I ask you to make. Ensure that you think they are a good idea and follow best practices.
