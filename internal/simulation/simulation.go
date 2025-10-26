@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -43,12 +44,23 @@ type Simulation struct {
 }
 
 func NewSimulation(broadcaster Broadcaster) *Simulation {
-	return &Simulation{
+	simulation := &Simulation{
 		broadcaster: broadcaster,
 		tickRate:    100 * time.Millisecond,
 		stopSignal:  make(chan bool),
-		citizens:    generateCitizens(5),
 	}
+
+	loadedCitizens, err := loadCitizensFromFile("data/citizens.json")
+	if err != nil || len(loadedCitizens) == 0 {
+		if err != nil {
+			log.Printf("Failed to load citizens from file: %v; generating random citizens instead", err)
+		}
+		simulation.citizens = generateCitizens(5)
+	} else {
+		simulation.citizens = loadedCitizens
+	}
+
+	return simulation
 }
 
 func generateCitizens(count int) []Citizen {
@@ -66,6 +78,41 @@ func generateCitizens(count int) []Citizen {
 		}
 	}
 	return citizens
+}
+
+func loadCitizensFromFile(path string) ([]Citizen, error) {
+	type fileCitizen struct {
+		ID    int
+		Name  string
+		HomeX int
+		HomeY int
+	}
+
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var fileCitizens []fileCitizen
+	if err := json.Unmarshal(content, &fileCitizens); err != nil {
+		return nil, err
+	}
+
+	citizens := make([]Citizen, 0, len(fileCitizens))
+	for _, c := range fileCitizens {
+		x := float64(c.HomeX)
+		y := float64(c.HomeY)
+		citizens = append(citizens, Citizen{
+			ID:        c.ID,
+			X:         x,
+			Y:         y,
+			TargetX:   x,
+			TargetY:   y,
+			MoveUntil: 0,
+		})
+	}
+
+	return citizens, nil
 }
 
 func (simulation *Simulation) Start() {
