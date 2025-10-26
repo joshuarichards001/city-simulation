@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// WebSocketHandler manages WebSocket connections and handles incoming messages.
 type WebSocketHandler struct {
 	hub      *Hub
 	upgrader websocket.Upgrader

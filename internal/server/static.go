@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 )
 
+// StaticHandler manages static files and serves them.
 type StaticHandler struct {
 	distPath string
 	fs       http.Handler

@@ -34,6 +34,7 @@ type Citizen struct {
 	MoveUntil int64   `json:"-"`
 }
 
+// Simulation manages the simulation state and handles citizen movement.
 type Simulation struct {
 	broadcaster Broadcaster
 	tickRate    time.Duration

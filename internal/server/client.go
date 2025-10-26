@@ -14,6 +14,7 @@ const (
 	maxMessageSize = 512
 )
 
+// Client manages the client connection and handles messages.
 type Client struct {
 	hub  *Hub
 	conn *websocket.Conn

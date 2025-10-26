@@ -13,6 +13,7 @@ const (
 	webDistPath = "./web/dist"
 )
 
+// Server serves static files, manages routing, and handles WebSocket connections.
 type Server struct {
 	port   string
 	router *http.ServeMux

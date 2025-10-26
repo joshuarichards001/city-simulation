@@ -5,6 +5,7 @@ import (
 	"sync"
 )
 
+// Hub manages all active WebSocket clients and broadcasts messages to them concurrently.
 type Hub struct {
 	clients    map[*Client]bool
 	broadcast  chan []byte
