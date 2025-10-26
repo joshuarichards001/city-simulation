@@ -1,7 +1,7 @@
 package main
 
 import (
-	"city-simulation/internal/citizen-generator"
+	"city-simulation/internal/citizengenerator"
 )
 
 func main() {

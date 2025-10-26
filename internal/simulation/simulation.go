@@ -12,11 +12,13 @@ type Broadcaster interface {
 	Broadcast(message []byte)
 }
 
+// Command represents a command for the simulation.
 type Command struct {
 	Type string      `json:"type"`
 	Data interface{} `json:"data"`
 }
 
+// StartMoveData represents the data for starting a citizen's movement.
 type StartMoveData struct {
 	CitizenID int     `json:"citizenId"`
 	FromX     float64 `json:"fromX"`
@@ -26,6 +28,7 @@ type StartMoveData struct {
 	Duration  int     `json:"duration"`
 }
 
+// Citizen represents a citizen in the simulation.
 type Citizen struct {
 	ID        int     `json:"id"`
 	X         float64 `json:"x"`
