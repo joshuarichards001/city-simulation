@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	
+	"city-simulation/internal/config"
 )
 
-var citizenFileLocation = "data/citizens.json"
-
 func loadCitizens() []*Citizen {
-	loadedCitizens, err := loadCitizensFromFile(citizenFileLocation)
+	loadedCitizens, err := loadCitizensFromFile(config.CitizensFilePath)
 	if err != nil {
 		log.Printf("Failed to load citizens from file: %v; generating random citizens instead", err)
 		return []*Citizen{}

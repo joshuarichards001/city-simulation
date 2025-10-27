@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	
+	"city-simulation/internal/config"
 )
 
 // BaseCity represents a city grid with a boolean grid, true values indicate buildings, false values indicate roads.
@@ -33,7 +35,7 @@ func GenerateCity() {
 }
 
 func printCity(city *BaseCity) {
-	file, err := os.Create("data/city.json")
+	file, err := os.Create(config.CityFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	
+	"city-simulation/internal/config"
 )
 
 type BaseCitizen struct {
@@ -27,7 +29,7 @@ func GenerateCitizens() {
 		{ID: 10, Name: "Henry Thomas", HomeX: 190, HomeY: 200},
 	}
 
-	file, err := os.Create("data/citizens.json")
+	file, err := os.Create(config.CitizensFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
