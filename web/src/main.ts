@@ -6,7 +6,7 @@ import { CityRenderer } from "./cityRenderer";
 
 (async () => {
   const app = new Application();
-  await app.init({ background: "#1099bb", resizeTo: window });
+  await app.init({ background: "#111", resizeTo: window });
   document.getElementById("pixi-container")!.appendChild(app.canvas);
 
   const cityRenderer = new CityRenderer(app);
