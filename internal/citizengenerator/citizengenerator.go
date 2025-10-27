@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-type Citizen struct {
+type BaseCitizen struct {
 	ID      int
 	Name    string
 	HomeX   int
@@ -14,7 +14,7 @@ type Citizen struct {
 }
 
 func GenerateCitizens() {
-	citizens := []Citizen{
+	citizens := []BaseCitizen{
 		{ID: 1, Name: "John Doe", HomeX: 10, HomeY: 20},
 		{ID: 2, Name: "Jane Smith", HomeX: 30, HomeY: 40},
 		{ID: 3, Name: "Alice Johnson", HomeX: 50, HomeY: 60},
