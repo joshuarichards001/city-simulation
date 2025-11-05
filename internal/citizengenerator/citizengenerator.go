@@ -3,30 +3,56 @@ package citizengenerator
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"os"
-	
+
+	"city-simulation/internal/citygenerator"
 	"city-simulation/internal/config"
 )
 
 type BaseCitizen struct {
-	ID      int
-	Name    string
-	HomeX   int
-	HomeY   int
+	ID    int
+	Name  string
+	HomeX int
+	HomeY int
 }
 
-func GenerateCitizens() {
-	citizens := []BaseCitizen{
-		{ID: 1, Name: "John Doe", HomeX: 10, HomeY: 20},
-		{ID: 2, Name: "Jane Smith", HomeX: 30, HomeY: 40},
-		{ID: 3, Name: "Alice Johnson", HomeX: 50, HomeY: 60},
-		{ID: 4, Name: "Bob Brown", HomeX: 70, HomeY: 80},
-		{ID: 5, Name: "Charlie Davis", HomeX: 90, HomeY: 100},
-		{ID: 6, Name: "David Wilson", HomeX: 110, HomeY: 120},
-		{ID: 7, Name: "Emily Taylor", HomeX: 130, HomeY: 140},
-		{ID: 8, Name: "Frank Martin", HomeX: 150, HomeY: 160},
-		{ID: 9, Name: "Grace Anderson", HomeX: 170, HomeY: 180},
-		{ID: 10, Name: "Henry Thomas", HomeX: 190, HomeY: 200},
+func GenerateCitizens(city *citygenerator.BaseCity) {
+	buildingLocations := []struct{ x, y int }{}
+	for i := range city.Grid {
+		for j := range city.Grid[i] {
+			if city.Grid[i][j] {
+				buildingLocations = append(buildingLocations, struct{ x, y int }{i, j})
+			}
+		}
+	}
+
+	citizenNames := []string{
+		"John Doe",
+		"Jane Smith",
+		"Alice Johnson",
+		"Bob Brown",
+		"Charlie Davis",
+		"David Wilson",
+		"Emily Taylor",
+		"Frank Martin",
+		"Grace Anderson",
+		"Henry Thomas",
+	}
+
+	rand.Shuffle(len(buildingLocations), func(i, j int) {
+		buildingLocations[i], buildingLocations[j] = buildingLocations[j], buildingLocations[i]
+	})
+
+	citizens := []BaseCitizen{}
+	for i, name := range citizenNames {
+		location := buildingLocations[i]
+		citizens = append(citizens, BaseCitizen{
+			ID:    i,
+			Name:  name,
+			HomeX: location.x,
+			HomeY: location.y,
+		})
 	}
 
 	file, err := os.Create(config.CitizensFilePath)

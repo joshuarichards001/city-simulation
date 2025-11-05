@@ -13,11 +13,6 @@ A city simulation that users can watch play out in real time in their browser.
 	- Serve static files from Go app
 - Hosting
 	- Fly.io
-	- Cloudflare
-		- Cache frontend
-		- Domain
-		- Rate limit WebSocket connections
-	- Plausible Analytics
 	
 ## Your Approach to Changes
 

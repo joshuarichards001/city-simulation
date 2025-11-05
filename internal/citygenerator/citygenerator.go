@@ -15,7 +15,7 @@ type BaseCity struct {
 
 var CitySize int = 20
 
-func GenerateCity() {
+func GenerateCity() *BaseCity {
 	city := &BaseCity{
 		Grid: make([][]bool, CitySize),
 	}
@@ -32,6 +32,8 @@ func GenerateCity() {
 	}
 
 	printCity(city)
+	
+	return city
 }
 
 func printCity(city *BaseCity) {

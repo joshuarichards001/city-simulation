@@ -3,60 +3,60 @@
     "ID": 1,
     "Name": "John Doe",
     "HomeX": 10,
-    "HomeY": 20
+    "HomeY": 0
   },
   {
     "ID": 2,
     "Name": "Jane Smith",
-    "HomeX": 30,
-    "HomeY": 40
+    "HomeX": 10,
+    "HomeY": 2
   },
   {
     "ID": 3,
     "Name": "Alice Johnson",
-    "HomeX": 50,
-    "HomeY": 60
+    "HomeX": 6,
+    "HomeY": 18
   },
   {
     "ID": 4,
     "Name": "Bob Brown",
-    "HomeX": 70,
-    "HomeY": 80
+    "HomeX": 14,
+    "HomeY": 4
   },
   {
     "ID": 5,
     "Name": "Charlie Davis",
-    "HomeX": 90,
-    "HomeY": 100
+    "HomeX": 4,
+    "HomeY": 0
   },
   {
     "ID": 6,
     "Name": "David Wilson",
-    "HomeX": 110,
-    "HomeY": 120
+    "HomeX": 2,
+    "HomeY": 12
   },
   {
     "ID": 7,
     "Name": "Emily Taylor",
-    "HomeX": 130,
-    "HomeY": 140
+    "HomeX": 14,
+    "HomeY": 8
   },
   {
     "ID": 8,
     "Name": "Frank Martin",
-    "HomeX": 150,
-    "HomeY": 160
+    "HomeX": 4,
+    "HomeY": 18
   },
   {
     "ID": 9,
     "Name": "Grace Anderson",
-    "HomeX": 170,
-    "HomeY": 180
+    "HomeX": 16,
+    "HomeY": 8
   },
   {
     "ID": 10,
     "Name": "Henry Thomas",
-    "HomeX": 190,
-    "HomeY": 200
+    "HomeX": 18,
+    "HomeY": 16
   }
 ]
